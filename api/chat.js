@@ -14,28 +14,45 @@ export default async function handler(req, res) {
       });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
       return res.status(500).json({
-        error: "OPENAI_API_KEY is not configured on Vercel."
+        error: "GEMINI_API_KEY is not configured on Vercel."
       });
     }
 
     const response = await fetch(
-      "https://api.openai.com/v1/responses",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
+          "x-goog-api-key": apiKey
         },
         body: JSON.stringify({
-          model: "gpt-5-mini",
-          instructions:
-            "You are Simmi, a friendly voice assistant. Answer clearly and briefly. If the user speaks Hindi or Hinglish, reply in the same language.",
-          input: message,
-          max_output_tokens: 500
+          systemInstruction: {
+            parts: [
+              {
+                text:
+                  "You are Simmi, a friendly AI voice assistant. Answer clearly and briefly. If the user speaks Hindi or Hinglish, reply in the same language. Be helpful, polite and natural."
+              }
+            ]
+          },
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: message
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 500
+          }
         })
       }
     );
@@ -43,22 +60,26 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("OpenAI error:", data);
+      console.error("Gemini API error:", data);
 
       return res.status(response.status).json({
-        error: data?.error?.message || "OpenAI request failed."
+        error:
+          data?.error?.message ||
+          "Gemini API request failed."
       });
     }
 
     const answer =
-      data.output_text ||
-      data.output?.flatMap(item =>
-        item.content || []
-      )
-      .filter(item => item.type === "output_text")
-      .map(item => item.text)
-      .join("") ||
-      "Sorry, I could not generate a response.";
+      data?.candidates?.[0]?.content?.parts
+        ?.map(part => part.text || "")
+        .join("")
+        .trim();
+
+    if (!answer) {
+      return res.status(500).json({
+        error: "Gemini returned an empty response."
+      });
+    }
 
     return res.status(200).json({
       reply: answer
