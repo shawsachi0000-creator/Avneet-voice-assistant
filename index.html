@@ -556,25 +556,58 @@ function send(){
 input.addEventListener("keydown",e=>{
   if(e.key==="Enter")send();
 });
-
-/* Speak AI response */
-function speak(text){
-
-  if(!("speechSynthesis" in window))return;
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
 
   speechSynthesis.cancel();
 
-  const voice=new SpeechSynthesisUtterance(text);
+  const speakNow = () => {
+    const voices = speechSynthesis.getVoices();
 
-  voice.lang=
-    /[\u0900-\u097F]/.test(text)
-    ? "hi-IN"
-    : "en-IN";
+    const isHindi = /[\u0900-\u097F]/.test(text);
 
-  voice.rate=.95;
-  voice.pitch=1;
+    const preferred = voices.find(v =>
+      isHindi
+        ? /hi-IN/i.test(v.lang)
+        : /en-IN/i.test(v.lang)
+    );
 
-  speechSynthesis.speak(voice);
+    const femaleNames = [
+      "female",
+      "zira",
+      "samantha",
+      "karen",
+      "google uk english female",
+      "google us english"
+    ];
+
+    const female = voices.find(v =>
+      femaleNames.some(name =>
+        v.name.toLowerCase().includes(name)
+      )
+    );
+
+    const selectedVoice = preferred || female || voices[0];
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    utterance.voice = selectedVoice || null;
+    utterance.lang = isHindi ? "hi-IN" : "en-IN";
+
+    // More natural sounding
+    utterance.rate = 0.92;
+    utterance.pitch = 1.08;
+    utterance.volume = 1;
+
+    speechSynthesis.speak(utterance);
+  };
+
+  if (speechSynthesis.getVoices().length) {
+    speakNow();
+  } else {
+    speechSynthesis.onvoiceschanged = speakNow;
+  }
+      }
 }
 
 /* Location */
