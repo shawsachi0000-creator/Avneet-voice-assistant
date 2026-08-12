@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#07112d">
+<meta name="description" content="Simmi Voice Assistant - Smart AI Voice Assistant">
+<title>Simmi Voice Assistant</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+:root{
+  --bg:#020617;
+  --card:rgba(9,22,55,.82);
+  --card2:rgba(12,31,73,.72);
+  --blue:#20bfff;
+  --cyan:#55eaff;
+  --purple:#a855f7;
+  --pink:#ec4899;
+  --text:#fff;
+  --muted:#91a4c7;
+  --border:rgba(76,184,255,.20);
+}
+
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 20% 10%,rgba(38,105,255,.22),transparent 32%),
+    radial-gradient(circle at 90% 20%,rgba(168,85,247,.18),transparent 30%),
+    radial-gradient(circle at 50% 100%,rgba(0,194,255,.12),transparent 35%),
+    #020617;
+  color:var(--text);
+  font-family:Inter,Arial,Helvetica,sans-serif;
+  overflow-x:hidden;
+}
+
+button,input{
+  font:inherit;
+}
+
+button{
+  border:0;
+  color:white;
+  cursor:pointer;
+}
+
+.app{
+  width:100%;
+  max-width:520px;
+  min-height:100vh;
+  margin:auto;
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(180deg,rgba(4,13,35,.96),rgba(2,8,25,.98));
+}
+
+/* BACKGROUND */
+.grid{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.15;
+  background-image:
+    linear-gradient(rgba(70,160,255,.12) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(70,160,255,.12) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:linear-gradient(to bottom,black,transparent);
+}
+
+/* HEADER */
+.header{
+  height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
+  position:relative;
+  z-index:5;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.logo{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  font-size:20px;
+  font-weight:900;
+  background:linear-gradient(135deg,#087fff,#8d2cff);
+  box-shadow:0 0 28px rgba(45,125,255,.45);
+}
+
+.brandText strong{
+  display:block;
+  font-size:18px;
+  letter-spacing:.5px;
+}
+
+.brandText span{
+  display:block;
+  color:#8da3c9;
+  font-size:11px;
+  margin-top:2px;
+}
+
+.iconBtn{
+  width:40px;
+  height:40px;
+  border-radius:13px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  display:grid;
+  place-items:center;
+  font-size:18px;
+}
+
+/* CONTENT */
+.content{
+  padding:0 17px 100px;
+  position:relative;
+  z-index:2;
+}
+
+.greeting{
+  padding:10px 4px 16px;
+}
+
+.greeting small{
+  color:#8da3c9;
+  font-size:12px;
+}
+
+.greeting h1{
+  font-size:29px;
+  margin-top:4px;
+  letter-spacing:-.8px;
+}
+
+.greeting h1 span{
+  background:linear-gradient(90deg,#fff,#64dfff,#a875ff);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+/* MAIN ASSISTANT CARD */
+.assistant{
+  min-height:430px;
+  border-radius:30px;
+  position:relative;
+  overflow:hidden;
+  padding:24px 18px 18px;
+  background:
+    radial-gradient(circle at 50% 35%,rgba(29,129,255,.20),transparent 34%),
+    linear-gradient(145deg,rgba(12,35,86,.94),rgba(5,13,40,.98));
+  border:1px solid rgba(84,185,255,.22);
+  box-shadow:
+    0 25px 80px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.assistant:before{
+  content:"";
+  position:absolute;
+  width:250px;
+  height:250px;
+  left:50%;
+  top:70px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:rgba(0,150,255,.12);
+  filter:blur(30px);
+}
+
+.status{
+  text-align:center;
+  position:relative;
+  z-index:2;
+}
+
+.statusLabel{
+  font-size:11px;
+  color:#91a4c7;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+.statusText{
+  margin-top:5px;
+  font-size:16px;
+  font-weight:700;
+}
+
+.statusText.active{
+  color:#55eaff;
+}
+
+/* POWER */
+.powerArea{
+  height:245px;
+  display:grid;
+  place-items:center;
+  position:relative;
+  z-index:2;
+}
+
+.ring{
+  position:absolute;
+  width:205px;
+  height:205px;
+  border-radius:50%;
+  border:1px solid rgba(36,169,255,.25);
+  box-shadow:
+    0 0 35px rgba(23,157,255,.10),
+    inset 0 0 35px rgba(23,157,255,.08);
+}
+
+.ring:before,
+.ring:after{
+  content:"";
+  position:absolute;
+  inset:13px;
+  border-radius:50%;
+  border:1px solid rgba(92,215,255,.16);
+}
+
+.ring:after{
+  inset:28px;
+  border-color:rgba(168,85,247,.14);
+}
+
+.power{
+  width:132px;
+  height:132px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  position:relative;
+  background:
+    radial-gradient(circle,#102f73,#071a45 65%,#05122f);
+  border:2px solid rgba(43,190,255,.50);
+  box-shadow:
+    0 0 0 12px rgba(25,123,255,.07),
+    0 0 45px rgba(0,183,255,.30);
+  transition:.3s;
+}
+
+.power:hover{
+  transform:scale(1.03);
+}
+
+.power.active{
+  border-color:#45e8ff;
+  box-shadow:
+    0 0 0 12px rgba(25,123,255,.10),
+    0 0 70px rgba(0,211,255,.65);
+  animation:pulse 1.6s infinite;
+}
+
+.powerIcon{
+  font-size:52px;
+  color:#46dfff;
+  line-height:1;
+  text-shadow:0 0 20px rgba(70,223,255,.65);
+}
+
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.06)}
+}
+
+.wave{
+  position:absolute;
+  bottom:31px;
+  left:50%;
+  transform:translateX(-50%);
+  height:34px;
+  display:flex;
+  align-items:center;
+  gap:3px;
+  opacity:.35;
+}
+
+.wave i{
+  width:3px;
+  height:8px;
+  border-radius:10px;
+  background:#40ddff;
+}
+
+.active .wave{
+  opacity:1;
+}
+
+.active .wave i{
+  animation:wave .8s ease-in-out infinite;
+}
+
+.wave i:nth-child(2){animation-delay:.08s}
+.wave i:nth-child(3){animation-delay:.16s}
+.wave i:nth-child(4){animation-delay:.24s}
+.wave i:nth-child(5){animation-delay:.32s}
+.wave i:nth-child(6){animation-delay:.40s}
+.wave i:nth-child(7){animation-delay:.48s}
+.wave i:nth-child(8){animation-delay:.56s}
+.wave i:nth-child(9){animation-delay:.64s}
+
+@keyframes wave{
+  0%,100%{height:7px}
+  50%{height:29px}
+}
+
+.version{
+  text-align:center;
+  position:relative;
+  z-index:2;
+}
+
+.version span{
+  display:inline-block;
+  padding:6px 13px;
+  border-radius:20px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.08);
+  color:#93a7c8;
+  font-size:9px;
+  letter-spacing:2px;
+}
+
+/* LOCATION */
+.location{
+  margin-top:18px;
+  padding:15px;
+  border-radius:18px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.08);
+  position:relative;
+  z-index:2;
+}
+
+.locationTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:#8095b8;
+  font-size:9px;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+}
+
+.locationMain{
+  margin-top:8px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.pin{
+  width:29px;
+  height:29px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:rgba(35,186,255,.11);
+  color:#4fe3ff;
+}
+
+.locationMain strong{
+  font-size:14px;
+}
+
+.locationMain small{
+  display:block;
+  color:#7e91b2;
+  font-size:9px;
+  margin-top:2px;
+}
+
+/* RESPONSE */
+.response{
+  margin-top:14px;
+  display:none;
+  padding:13px;
+  border-radius:17px;
+  background:rgba(24,88,150,.14);
+  border:1px solid rgba(61,194,255,.15);
+}
+
+.response.show{
+  display:block;
+  animation:slide .3s ease;
+}
+
+.responseTitle{
+  font-size:10px;
+  color:#55ddff;
+  margin-bottom:5px;
+  letter-spacing:1px;
+}
+
+.responseText{
+  font-size:13px;
+  line-height:1.5;
+  color:#d7e5ff;
+}
+
+/* QUICK ACTIONS */
+.sectionTitle{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:22px 3px 10px;
+}
+
+.sectionTitle strong{
+  font-size:14px;
+}
+
+.sectionTitle span{
+  color:#6e84a9;
+  font-size:10px;
+}
+
+.quickGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.quick{
+  min-height:74px;
+  border-radius:17px;
+  text-align:left;
+  padding:13px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.075);
+  transition:.2s;
+}
+
+.quick:active{
+  transform:scale(.97);
+}
+
+.quickIcon{
+  font-size:19px;
+}
+
+.quick strong{
+  display:block;
+  font-size:12px;
+  margin-top:7px;
+}
+
+.quick small{
+  display:block;
+  color:#7e92b4;
+  font-size:9px;
+  margin-top:2px;
+}
+
+/* COMMAND INPUT */
+.commandBox{
+  margin-top:15px;
+  padding:7px;
+  border-radius:18px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.10);
+  display:flex;
+  gap:7px;
+}
+
+.commandBox input{
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:white;
+  padding:10px 9px;
+  font-size:12px;
+}
+
+.commandBox input::placeholder{
+  color:#64799d;
+}
+
+.send{
+  width:43px;
+  border-radius:13px;
+  background:linear-gradient(135deg,#0a8fff,#733dff);
+  box-shadow:0 7px 25px rgba(55,91,255,.28);
+}
+
+/* PAGES */
+.page{
+  display:none;
+  animation:slide .3s ease;
+}
+
+.page.active{
+  display:block;
+}
+
+@keyframes slide{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.card{
+  padding:17px;
+  border-radius:20px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.075);
+  margin-bottom:10px;
+}
+
+.card h3{
+  font-size:14px;
+  margin-bottom:6px;
+}
+
+.card p{
+  color:#8da0bf;
+  font-size:11px;
+  line-height:1.6;
+}
+
+.historyItem{
+  display:flex;
+  gap:12px;
+  padding:14px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.historyItem:last-child{
+  border-bottom:0;
+}
+
+.historyIcon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  background:rgba(31,166,255,.10);
+  display:grid;
+  place-items:center;
+}
+
+.historyText{
+  flex:1;
+}
+
+.historyText strong{
+  font-size:12px;
+}
+
+.historyText small{
+  display:block;
+  color:#6f84a6;
+  font-size:9px;
+  margin-top:3px;
+}
+
+/* SETTINGS */
+.setting{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:15px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.setting:last-child{
+  border:0;
+}
+
+.settingInfo strong{
+  display:block;
+  font-size:12px;
+}
+
+.settingInfo small{
+  display:block;
+  color:#7185a6;
+  font-size:9px;
+  margin-top:3px;
+}
+
+.toggle{
+  width:46px;
+  height:25px;
+  border-radius:30px;
+  padding:3px;
+  background:#263654;
+  transition:.2s;
+}
+
+.toggle span{
+  display:block;
+  width:19px;
+  height:19px;
+  border-radius:50%;
+  background:#fff;
+  transition:.2s;
+}
+
+.toggle.on{
+  background:#168cff;
+}
+
+.toggle.on span{
+  transform:translateX(21px);
+}
+
+/* BOTTOM NAV */
+.bottomNav{
+  position:fixed;
+  z-index:20;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(520px,100%);
+  height:75px;
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+  background:rgba(3,10,28,.93);
+  backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.navItem{
+  border-radius:14px;
+  background:transparent;
+  color:#62799f;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  font-size:19px;
+}
+
+.navItem span{
+  font-size:8px;
+}
+
+.navItem.active{
+  color:#48dcff;
+  background:rgba(43,171,255,.08);
+}
+
+/* TOAST */
+.toast{
+  position:fixed;
+  z-index:50;
+  left:50%;
+  bottom:88px;
+  transform:translate(-50%,20px);
+  width:max-content;
+  max-width:90%;
+  padding:11px 15px;
+  border-radius:14px;
+  background:rgba(12,26,57,.96);
+  border:1px solid rgba(75,193,255,.2);
+  color:#dbeaff;
+  font-size:11px;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* DESKTOP */
+@media(min-width:700px){
+  body{
+    padding:25px 0;
+  }
+
+  .app{
+    min-height:calc(100vh - 50px);
+    border-radius:34px;
+    box-shadow:0 35px 100px rgba(0,0,0,.5);
+  }
+
+  .bottomNav{
+    bottom:25px;
+    width:520px;
+    border-radius:0 0 34px 34px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="grid"></div>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">
+      <div class="logo">S</div>
+      <div class="brandText">
+        <strong>SIMMI</strong>
+        <span>VOICE ASSISTANT</span>
+      </div>
+    </div>
+
+    <button class="iconBtn" id="themeBtn" aria-label="Theme">☼</button>
+  </header>
+
+  <main class="content">
+
+    <!-- HOME PAGE -->
+    <section class="page active" id="homePage">
+
+      <div class="greeting">
+        <small id="greetingTime">Good morning</small>
+        <h1>Hello, <span>Simmi</span> 👋</h1>
+      </div>
+
+      <div class="assistant">
+
+        <div class="status">
+          <div class="statusLabel">Assistant status</div>
+          <div class="statusText" id="statusText">Ready to listen</div>
+        </div>
+
+        <div class="powerArea">
+
+          <div class="ring"></div>
+
+          <button class="power" id="powerBtn" aria-label="Start voice assistant">
+            <div class="powerIcon">⏻</div>
+
+            <div class="wave">
+              <i></i><i></i><i></i><i></i><i></i>
+              <i></i><i></i><i></i><i></i>
+            </div>
+          </button>
+
+        </div>
+
+        <div class="version">
+          <span>SIMMI • VERSION 1.0</span>
+        </div>
+
+        <div class="location">
+          <div class="locationTop">
+            <span>● Current location</span>
+            <span id="gpsStatus">READY</span>
+          </div>
+
+          <div class="locationMain">
+            <div class="pin">⌖</div>
+            <div>
+              <strong id="locationText">Location not detected</strong>
+              <small id="coordinates">Tap the assistant to start</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="response" id="responseBox">
+          <div class="responseTitle">SIMMI RESPONSE</div>
+          <div class="responseText" id="responseText">
+            Hello! How can I help you?
+          </div>
+        </div>
+
+      </div>
+
+      <div class="sectionTitle">
+        <strong>Quick actions</strong>
+        <span>Tap to use</span>
+      </div>
+
+      <div class="quickGrid">
+
+        <button class="quick" data-command="What is the time">
+          <div class="quickIcon">🕐</div>
+          <strong>Time</strong>
+          <small>Check current time</small>
+        </button>
+
+        <button class="quick" data-command="What is today's date">
+          <div class="quickIcon">📅</div>
+          <strong>Date</strong>
+          <small>Check today's date</small>
+        </button>
+
+        <button class="quick" data-command="Open Google">
+          <div class="quickIcon">🌐</div>
+          <strong>Google</strong>
+          <small>Open Google search</small>
+        </button>
+
+        <button class="quick" data-command="Tell me a joke">
+          <div class="quickIcon">✨</div>
+          <strong>Joke</strong>
+          <small>Make me laugh</small>
+        </button>
+
+      </div>
+
+      <div class="commandBox">
+        <input
+          id="commandInput"
+          type="text"
+          autocomplete="off"
+          placeholder="Type a command..."
+        >
+        <button class="send" id="sendBtn">➤</button>
+      </div>
+
+    </section>
+
+    <!-- HISTORY -->
+    <section class="page" id="historyPage">
+
+      <div class="greeting">
+        <small>SIMMI ACTIVITY</small>
+        <h1>Command <span>History</span></h1>
+      </div>
+
+      <div class="card" id="historyList">
+        <div class="historyItem">
+          <div class="historyIcon">🎙️</div>
+          <div class="historyText">
+            <strong>Simmi is ready</strong>
+            <small>No commands yet</small>
+          </div>
+        </div>
+      </div>
+
+      <button class="quick" id="clearHistory" style="width:100%">
+        🗑️ Clear command history
+      </button>
+
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="page" id="settingsPage">
+
+      <div class="greeting">
+        <small>SIMMI CONFIGURATION</small>
+        <h1>App <span>Settings</span></h1>
+      </div>
+
+      <div class="card">
+
+        <div class="setting">
+          <div class="settingInfo">
+            <strong>Voice response</strong>
+            <small>Speak responses automatically</small>
+          </div>
+          <button class="toggle on" data-setting="voice">
+            <span></span>
+          </button>
+        </div>
+
+        <div class="setting">
+          <div class="settingInfo">
+            <strong>Auto location</strong>
+            <small>Use device location when available</small>
+          </div>
+          <button class="toggle on" data-setting="location">
+            <span></span>
+          </button>
+        </div>
+
+        <div class="setting">
+          <div class="settingInfo">
+            <strong>Animations</strong>
+            <small>Enable interface animations</small>
+          </div>
+          <button class="toggle on" data-setting="animation">
+            <span></span>
+          </button>
+        </div>
+
+      </div>
+
+      <div class="card">
+        <h3>About Simmi</h3>
+        <p>
+          Simmi is a browser-based voice assistant interface.
+          It can listen to voice commands, speak responses,
+          open supported websites, tell time/date and use your
+          device location when permission is granted.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- FEATURES -->
+    <section class="page" id="featuresPage">
+
+      <div class="greeting">
+        <small>SIMMI CAPABILITIES</small>
+        <h1>Smart <span>Features</span></h1>
+      </div>
+
+      <div class="card">
+        <h3>🎙️ Voice Recognition</h3>
+        <p>Tap the main power button and speak a command. Supported browsers can convert your voice to text.</p>
+      </div>
+
+      <div class="card">
+        <h3>🔊 Voice Response</h3>
+        <p>Simmi can speak its response using the device's built-in speech synthesis.</p>
+      </div>
+
+      <div class="card">
+        <h3>📍 Location</h3>
+        <p>When you allow permission, Simmi can display your current latitude and longitude.</p>
+      </div>
+
+      <div class="card">
+        <h3>🌐 Web Actions</h3>
+        <p>Commands such as Google, YouTube and websites can be opened from the assistant.</p>
+      </div>
+
+      <div class="card">
+        <h3>⚡ Quick Commands</h3>
+        <p>Use the predefined buttons or type your own supported command.</p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottomNav">
+
+    <button class="navItem active" data-page="homePage">
+      🏠
+      <span>Home</span>
+    </button>
+
+    <button class="navItem" data-page="historyPage">
+      🕘
+      <span>History</span>
+    </button>
+
+    <button class="navItem" data-page="settingsPage">
+      ⚙️
+      <span>Settings</span>
+    </button>
+
+    <button class="navItem" data-page="featuresPage">
+      ⓘ
+      <span>Features</span>
+    </button>
+
+  </nav>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ==============================
+   SIMMI VOICE ASSISTANT
+   ============================== */
+
+const state = {
+  listening:false,
+  voice:true,
+  location:true,
+  animation:true,
+  recognition:null,
+  history:[]
+};
+
+const powerBtn = document.getElementById("powerBtn");
+const statusText = document.getElementById("statusText");
+const responseBox = document.getElementById("responseBox");
+const responseText = document.getElementById("responseText");
+const commandInput = document.getElementById("commandInput");
+const sendBtn = document.getElementById("sendBtn");
+const toast = document.getElementById("toast");
+
+const locationText = document.getElementById("locationText");
+const coordinates = document.getElementById("coordinates");
+const gpsStatus = document.getElementById("gpsStatus");
+
+const historyList = document.getElementById("historyList");
+
+/* ==============================
+   GREETING
+   ============================== */
+
+function updateGreeting(){
+  const hour = new Date().getHours();
+
+  let text = "Good morning";
+
+  if(hour >= 12 && hour < 17){
+    text = "Good afternoon";
+  }else if(hour >= 17){
+    text = "Good evening";
+  }
+
+  document.getElementById("greetingTime").textContent = text;
+}
+
+updateGreeting();
+
+/* ==============================
+   TOAST
+   ============================== */
+
+let toastTimer;
+
+function showToast(message){
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(()=>{
+    toast.classList.remove("show")
