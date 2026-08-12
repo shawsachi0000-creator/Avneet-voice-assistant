@@ -538,9 +538,10 @@ main{
     placeholder="Type anything to ask Simmi...">
 
   <button
-    class="send"
-    onclick="send()">
-    ➤
+  type="button"
+  class="send"
+  id="sendButton">
+  ➤
   </button>
 </div>
 
@@ -939,7 +940,9 @@ input.addEventListener(
     }
   }
 );
-
+document
+  .querySelector(".send")
+  .addEventListener("click", send);
 
 /* =========================
    HUMAN-LIKE FEMALE VOICE
