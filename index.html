@@ -538,10 +538,9 @@ main{
     placeholder="Type anything to ask Simmi...">
 
   <button
-  type="button"
-  class="send"
-  id="sendButton">
-  ➤
+    class="send"
+    onclick="send()">
+    ➤
   </button>
 </div>
 
@@ -940,9 +939,7 @@ input.addEventListener(
     }
   }
 );
-document
-  .querySelector(".send")
-  .addEventListener("click", send);
+
 
 /* =========================
    HUMAN-LIKE FEMALE VOICE
@@ -1412,5 +1409,157 @@ function showPanel(name){
 
     buttons[3]
       .classList.add("active");
+window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth"
+    });
 
+    return;
+  }
+}
+
+/* =========================
+   LOCATION
+========================= */
+
+function requestLocation(){
+
+  if(!("geolocation" in navigator)){
+    locationEl.textContent = "Location is not supported";
+    showToast("Location is not supported");
+    return;
+  }
+
+  locationEl.textContent = "Requesting location...";
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const lat = position.coords.latitude.toFixed(5);
+      const lon = position.coords.longitude.toFixed(5);
+
+      locationEl.textContent =
+        `GPS available • ${lat}, ${lon}`;
+    },
+    error => {
+      console.error("Location:", error);
+      locationEl.textContent =
+        "Location permission not granted";
+
+      showToast("Please allow location permission");
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 60000
+    }
+  );
+}
+
+/* =========================
+   SAFE BUTTON BINDINGS
+========================= */
+
+const sendButton =
+  document.querySelector(".send");
+
+if(sendButton){
+  sendButton.addEventListener("click", event => {
+    event.preventDefault();
+    send();
+  });
+}
+
+if(mic){
+  mic.addEventListener("click", event => {
+    event.preventDefault();
+  });
+}
+
+/* Ask for microphone permission when the user taps the mic.
+   SpeechRecognition still handles the actual speech input. */
+async function prepareMicrophone(){
+
+  if(!navigator.mediaDevices ||
+     !navigator.mediaDevices.getUserMedia){
+    return true;
+  }
+
+  try{
+    const stream =
+      await navigator.mediaDevices.getUserMedia({
+        audio:true
+      });
+
+    stream.getTracks().forEach(track => track.stop());
+
+    return true;
+
+  }catch(error){
+
+    console.error("Microphone permission:", error);
+
+    showToast(
+      "Please allow microphone permission in Chrome"
+    );
+
+    statusEl.textContent =
+      "Microphone permission needed";
+
+    return false;
+  }
+}
+
+/* Replace the original mic click with a permission-safe version. */
+mic.onclick = async () => {
+
+  if(!recognition){
+    showToast(
+      "Voice recognition is not supported. Use Chrome."
+    );
+    return;
+  }
+
+  if(listening){
+    recognition.stop();
+    return;
+      }
+  const allowed =
+    await prepareMicrophone();
+
+  if(!allowed) return;
+
+  try{
+
+    recognition.start();
+
+  }catch(error){
+
+    console.error(
+      "Recognition start:",
+      error
+    );
+
+    showToast(
+      "Tap the microphone again and speak"
+    );
+  }
+};
+
+/* Hindi + English recognition */
+try{
+  if(recognition){
+    recognition.lang = "hi-IN";
+  }
+}catch(error){}
+
+/* Load saved conversations on startup. */
+loadHistory();
+
+/* Start on Home. */
+showPanel("home");
+
+</script>
+
+</body>
+</html>
     
