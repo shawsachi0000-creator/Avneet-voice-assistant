@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Best Sister — Rakshabandhan</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080608}
+#stage{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#090709}
+.viewer{position:relative;width:min(100vw,960px);aspect-ratio:960/560;overflow:hidden;background:#fff}
+.page{position:absolute;inset:0;display:none;background-size:100% 100%;background-position:center;background-repeat:no-repeat}
+.page.on{display:block;animation:fade .28s ease}
+@keyframes fade{from{opacity:.25;transform:scale(.995)}to{opacity:1;transform:scale(1)}}
+.hot{position:absolute;cursor:pointer;background:transparent;border:0}
+#pinitial .yes{left:31%;bottom:0;width:22%;height:15%}
+#pinitial .no{left:57%;bottom:0;width:20%;height:15%}
+#pno .again{left:39%;bottom:0;width:24%;height:18%}
+#pexcited .yes2{left:31%;bottom:0;width:39%;height:17%}
+#pgifts .gift1{left:11%;top:26%;width:25%;height:48%}
+#pgifts .gift2{left:37%;top:26%;width:25%;height:48%}
+#pgifts .gift3{left:64%;top:26%;width:25%;height:48%}
+#pgifts .memory{right:0;top:38%;width:10%;height:35%}
+#prakhi .next,#pcert .next2,#pmem .next3{right:0;bottom:0;width:18%;height:24%}
+#pgifts2 .you{left:64%;top:26%;width:25%;height:48%}
+#pyou .end{right:0;bottom:0;width:18%;height:25%}
+.overlay{position:absolute;inset:0;pointer-events:none}
+/* Personalize only the two places where the reference uses a name/photo. */
+.rakhiPersonal{position:absolute;left:45.8%;top:59.5%;width:24%;height:28%;object-fit:cover;border:5px solid #b72f27;transform:rotate(1.5deg);display:none}
+.certName{position:absolute;left:32%;top:43%;width:37%;height:14%;display:none;align-items:center;justify-content:center;font-family:"Brush Script MT","Segoe Print",cursive;font-size:clamp(25px,4vw,43px);color:#3b3030;background:#f8f7efdd}
+.music{position:fixed;right:12px;bottom:12px;z-index:30;border:2px solid #b52f28;background:#fff8ed;color:#a82a24;border-radius:18px;padding:8px 12px;font:800 11px Arial}
+#music{display:none}
+@media(max-width:600px){.viewer{width:100vw}}
+</style>
+</head>
+<body>
+<div id="stage"><div class="viewer">
+  <div class="page on" id="pinitial" style="background-image:url('pages/initial.jpg')">
+    <button class="hot yes" onclick="show('pexcited')"></button><button class="hot no" onclick="show('pno')"></button>
+  </div>
+  <div class="page" id="pno" style="background-image:url('pages/no.jpg')">
+    <button class="hot again" onclick="show('pinitial')"></button>
+  </div>
+  <div class="page" id="pexcited" style="background-image:url('pages/excited.jpg')">
+    <button class="hot yes2" onclick="show('pgifts')"></button>
+  </div>
+  <div class="page" id="pgifts" style="background-image:url('pages/gifts.jpg')">
+    <button class="hot gift1" onclick="show('prakhi')"></button>
+    <button class="hot gift2" onclick="show('pcert')"></button>
+    <button class="hot gift3" onclick="show('pmem')"></button>
+    <button class="hot memory" onclick="show('pmem')"></button>
+  </div>
+  <div class="page" id="prakhi" style="background-image:url('pages/rakhi.jpg')">
+    <img class="rakhiPersonal" src="images/photo1.jpg">
+    <button class="hot next" onclick="show('pcert')"></button>
+  </div>
+  <div class="page" id="pcert" style="background-image:url('pages/cert.jpg')">
+    <div class="certName">Best Sister</div>
+    <button class="hot next2" onclick="show('pgifts')"></button>
+  </div>
+  <div class="page" id="pmem" style="background-image:url('pages/mem.jpg')">
+    <button class="hot next3" onclick="show('pgifts')"></button>
+  </div>
+  <div class="page" id="pgifts2" style="background-image:url('pages/gifts.jpg')">
+    <button class="hot you" onclick="show('pyou')"></button>
+  </div>
+  <div class="page" id="pyou" style="background-image:url('pages/you.jpg')">
+    <button class="hot end" onclick="show('pinitial')"></button>
+  </div>
+</div></div>
+<button class="music" onclick="document.getElementById('music').click()">🎵 ADD MUSIC</button>
+<input id="music" type="file" accept="audio/*">
+<audio id="audio" loop></audio>
+<script>
+function show(id){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+ const p=document.getElementById(id);p.classList.add('on');
+ if(id==='prakhi')p.querySelector('.rakhiPersonal').style.display='block';
+ if(id==='pcert')p.querySelector('.certName').style.display='flex';
+}
+document.getElementById('music').addEventListener('change',e=>{
+ const f=e.target.files[0];if(!f)return;
+ const a=document.getElementById('audio');a.src=URL.createObjectURL(f);a.play().catch(()=>{});
+ document.querySelector('.music').textContent='🎵 MUSIC ON';
+});
+</script>
+</body></html>
